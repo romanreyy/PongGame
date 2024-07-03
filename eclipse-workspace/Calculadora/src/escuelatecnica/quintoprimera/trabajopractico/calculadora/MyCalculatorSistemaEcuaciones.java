@@ -24,8 +24,8 @@ public class MyCalculatorSistemaEcuaciones extends JFrame {
     private JLabel lblResuY;
     private JLabel lblResuZ;
 
-    public MyCalculatorSistemaEcuaciones(int i, int j, int width, int height) {
-        setBounds(i, j, width, height);
+    public MyCalculatorSistemaEcuaciones() {
+        setBounds(100, 100, 500, 450);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         getContentPane().setLayout(null);
         getContentPane().setBackground(new Color(224, 255, 255));
@@ -70,16 +70,16 @@ public class MyCalculatorSistemaEcuaciones extends JFrame {
                     }
                 }
 
-                lblResuX = new JLabel("Resultado para x:");
+                lblResuX = new JLabel("x=");
                 lblResuX.setFont(new Font("Times New Roman", Font.PLAIN, 20));
                 lblResuX.setHorizontalAlignment(SwingConstants.CENTER);
-                lblResuX.setBounds(100, 120, 200, 30);
+                lblResuX.setBounds(100, 120, 300, 30);
                 mainPanel.add(lblResuX);
 
-                lblResuY = new JLabel("Resultado para y:");
+                lblResuY = new JLabel("y=");
                 lblResuY.setFont(new Font("Times New Roman", Font.PLAIN, 20));
                 lblResuY.setHorizontalAlignment(SwingConstants.CENTER);
-                lblResuY.setBounds(100, 160, 200, 30);
+                lblResuY.setBounds(100, 160, 300, 30);
                 mainPanel.add(lblResuY);
 
                 JButton btnSolve2x2 = new JButton("Resolver 2x2");
@@ -93,8 +93,8 @@ public class MyCalculatorSistemaEcuaciones extends JFrame {
                                 }
                             }
                             String[] resultados = SistemasEcuaciones.resolverSistema2x2(coef).split(",");
-                            lblResuX.setText("Resultado para x: " + resultados[0]);
-                            lblResuY.setText("Resultado para y: " + resultados[1]);
+                            lblResuX.setText("" + resultados[0]);
+                            lblResuY.setText("" + resultados[1]);
                         } catch (NumberFormatException ex) {
                             lblResuX.setText("Error: Entrada no válida");
                             lblResuY.setText("");
@@ -124,22 +124,22 @@ public class MyCalculatorSistemaEcuaciones extends JFrame {
                     }
                 }
 
-                lblResuX = new JLabel("Resultado para x:");
+                lblResuX = new JLabel("x=");
                 lblResuX.setFont(new Font("Times New Roman", Font.PLAIN, 20));
                 lblResuX.setHorizontalAlignment(SwingConstants.CENTER);
-                lblResuX.setBounds(100, 120, 200, 30);
+                lblResuX.setBounds(100, 120, 300, 30);
                 mainPanel.add(lblResuX);
 
-                lblResuY = new JLabel("Resultado para y:");
+                lblResuY = new JLabel("y=");
                 lblResuY.setFont(new Font("Times New Roman", Font.PLAIN, 20));
                 lblResuY.setHorizontalAlignment(SwingConstants.CENTER);
-                lblResuY.setBounds(100, 160, 200, 30);
+                lblResuY.setBounds(100, 160, 300, 30);
                 mainPanel.add(lblResuY);
 
-                lblResuZ = new JLabel("Resultado para z:");
+                lblResuZ = new JLabel("z=");
                 lblResuZ.setFont(new Font("Times New Roman", Font.PLAIN, 20));
                 lblResuZ.setHorizontalAlignment(SwingConstants.CENTER);
-                lblResuZ.setBounds(100, 200, 200, 30);
+                lblResuZ.setBounds(100, 200, 300, 30);
                 mainPanel.add(lblResuZ);
 
                 JButton btnSolve3x3 = new JButton("Resolver 3x3");
@@ -153,9 +153,9 @@ public class MyCalculatorSistemaEcuaciones extends JFrame {
                                 }
                             }
                             String[] resultados = SistemasEcuaciones.resolverSistema3x3(coef).split(",");
-                            lblResuX.setText("Resultado para x: " + resultados[0]);
-                            lblResuY.setText("Resultado para y: " + resultados[1]);
-                            lblResuZ.setText("Resultado para z: " + resultados[2]);
+                            lblResuX.setText("" + resultados[0]);
+                            lblResuY.setText("" + resultados[1]);
+                            lblResuZ.setText("" + resultados[2]);
                         } catch (NumberFormatException ex) {
                             lblResuX.setText("Error: Entrada no válida");
                             lblResuY.setText("");

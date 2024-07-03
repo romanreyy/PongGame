@@ -46,7 +46,7 @@ public class MyCalculatorMenuPrincipal {
 		JButton btnTwo = this.createNewButton("Sistema Ecuaciones", 6, 75, 268, 50);
 		btnTwo.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				MyCalculatorSistemaEcuaciones addScreen = new MyCalculatorSistemaEcuaciones(100, 100, 643, 346);
+				MyCalculatorSistemaEcuaciones addScreen = new MyCalculatorSistemaEcuaciones();
 				addScreen.setVisible(true);
 			}
 		});
