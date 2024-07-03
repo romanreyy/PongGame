@@ -32,7 +32,7 @@ public class MatrixCalculator extends JFrame {
 //				MatrixCalculator.this.setVisible(true);
 			}
 		});
-		btnBack.setBounds(22, 283, 117, 29);
+		btnBack.setBounds(22, 260, 117, 29);
 		this.getContentPane().add(btnBack);
 
 		JComboBox<String> matriz1 = new JComboBox<String>();
@@ -82,8 +82,7 @@ public class MatrixCalculator extends JFrame {
 		optionsOperations.addItem("Division (/)");
 		
 		JButton btnClean = new JButton("limpiar");
-
-		btnClean.setBounds(565, 288, 72, 18);
+		btnClean.setBounds(500, 260, 80, 29);
 		getContentPane().add(btnClean);
 
 		matriz1.addActionListener(new ActionListener() {

@@ -14,8 +14,8 @@ public class Inversa extends JFrame{
 	private JTextField[][] textFieldMatriz1;
 	private JTextField[][] textFieldMatrizResultado;
 	
-	public Inversa(int x, int y, int width, int height) {
-		setBounds(x, y, width, height);
+	public Inversa() {
+		setBounds(100, 100, 500, 450);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		getContentPane().setLayout(null);
 		
@@ -25,7 +25,7 @@ public class Inversa extends JFrame{
 				dispose();
 			}
 		});
-		btnBack.setBounds(22, 283, 117, 29);
+		btnBack.setBounds(22, 260, 117, 29);
 		getContentPane().add(btnBack);
 		
 		JComboBox<String> matriz1 = new JComboBox<String>();
@@ -42,12 +42,11 @@ public class Inversa extends JFrame{
 		getContentPane().add(matriz1);
 		
 		JButton btnClean = new JButton("limpiar");
-
-		btnClean.setBounds(565, 288, 72, 18);
+		btnClean.setBounds(370, 260, 80, 29);
 		getContentPane().add(btnClean);
 		
 		JButton btnIgual = new JButton("=");
-		btnIgual.setBounds(420, 141, 61, 29);
+		btnIgual.setBounds(250, 150, 61, 29);
 		getContentPane().add(btnIgual);
 		
 		matriz1.addActionListener(new ActionListener() {
@@ -66,7 +65,7 @@ public class Inversa extends JFrame{
 
 		        textFieldMatriz1 = new JTextField[filas][columnas];
 		        int x = 70;
-		        int y = 100;
+		        int y = 130;
 		        int width = 30;
 		        int height = 30;
 		        for (int i = 0; i < filas; i++) {
@@ -83,19 +82,113 @@ public class Inversa extends JFrame{
 		});
 		
 		btnIgual.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				CalculateInversaCleanButton calculateInversa = new CalculateInversaCleanButton();
-//				CalculateInversaCleanButton.calculateInversa(textFieldMatriz1, textFieldMatrizResultado, Inversa.this);
-			}
-		});
+			 public void actionPerformed(ActionEvent e) {
+				 calculateAndDisplayInverse();
+	            }
+	        });
+		
 		btnClean.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				CalculateInversaCleanButton cleanScreen = new CalculateInversaCleanButton();
-	//			cleanScreen.cleanMatriz(textFieldMatriz1, textFieldMatrizResultado, Inversa.this);
-				textFieldMatriz1 = null;
-				textFieldMatrizResultado = null;
-			}
-		});
-	}
+			 public void actionPerformed(ActionEvent e) {
+	                if (textFieldMatriz1 != null) {
+	                    for (int i = 0; i < textFieldMatriz1.length; i++) {
+	                        for (int j = 0; j < textFieldMatriz1[i].length; j++) {
+	                            textFieldMatriz1[i][j].setText("");
+	                        }
+	                    }
+	                }
+	                if (textFieldMatrizResultado != null) {
+	                    for (int i = 0; i < textFieldMatrizResultado.length; i++) {
+	                        for (int j = 0; j < textFieldMatrizResultado[i].length; j++) {
+	                            textFieldMatrizResultado[i][j].setText("");
+	                        }
+	                    }
+	                }
+	            }
+	        });
+	    }
+		
+	private void calculateAndDisplayInverse() {
+        int rows = textFieldMatriz1.length;
+        int cols = textFieldMatriz1[0].length;
 
-}
+        if (rows != cols) {
+            // La matriz no es cuadrada, no se puede calcular la inversa
+            return;
+        }
+
+        double[][] matriz = new double[rows][cols];
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                matriz[i][j] = Double.parseDouble(textFieldMatriz1[i][j].getText());
+            }
+        }
+
+        double[][] inversa = new double[rows][cols];
+        if (rows == 1) {
+            inversa[0][0] = 1 / matriz[0][0];
+        } else if (rows == 2) {
+            inversa = inversa2x2(matriz);
+        } else if (rows == 3) {
+            inversa = inversa3x3(matriz);
+        }
+
+        if (textFieldMatrizResultado != null) {
+            for (int i = 0; i < textFieldMatrizResultado.length; i++) {
+                for (int j = 0; j < textFieldMatrizResultado[i].length; j++) {
+                    getContentPane().remove(textFieldMatrizResultado[i][j]);
+                }
+            }
+        }
+
+        textFieldMatrizResultado = new JTextField[rows][cols];
+        int x = 360;
+        int y = 130;
+        int width = 30;
+        int height = 30;
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                textFieldMatrizResultado[i][j] = new JTextField(String.format("%.2f", inversa[i][j]));
+                textFieldMatrizResultado[i][j].setBounds(x + j * (width + 5), y + i * (height + 5), width, height);
+                textFieldMatrizResultado[i][j].setEditable(false);
+                getContentPane().add(textFieldMatrizResultado[i][j]);
+            }
+        }
+
+        revalidate();
+        repaint();
+    }
+
+    private double[][] inversa2x2(double[][] matriz) {
+        double det = matriz[0][0] * matriz[1][1] - matriz[0][1] * matriz[1][0];
+        double[][] inversa = {
+            { matriz[1][1] / det, -matriz[0][1] / det },
+            { -matriz[1][0] / det, matriz[0][0] / det }
+        };
+        return inversa;
+    }
+
+    private double[][] inversa3x3(double[][] matriz) {
+        double det = matriz[0][0] * (matriz[1][1] * matriz[2][2] - matriz[1][2] * matriz[2][1]) -
+                     matriz[0][1] * (matriz[1][0] * matriz[2][2] - matriz[1][2] * matriz[2][0]) +
+                     matriz[0][2] * (matriz[1][0] * matriz[2][1] - matriz[1][1] * matriz[2][0]);
+
+        double[][] adjunta = {
+            { matriz[1][1] * matriz[2][2] - matriz[1][2] * matriz[2][1], matriz[0][2] * matriz[2][1] - matriz[0][1] * matriz[2][2], matriz[0][1] * matriz[1][2] - matriz[0][2] * matriz[1][1] },
+            { matriz[1][2] * matriz[2][0] - matriz[1][0] * matriz[2][2], matriz[0][0] * matriz[2][2] - matriz[0][2] * matriz[2][0], matriz[0][2] * matriz[1][0] - matriz[0][0] * matriz[1][2] },
+            { matriz[1][0] * matriz[2][1] - matriz[1][1] * matriz[2][0], matriz[0][1] * matriz[2][0] - matriz[0][0] * matriz[2][1], matriz[0][0] * matriz[1][1] - matriz[0][1] * matriz[1][0] }
+        };
+
+        double[][] inversa = new double[3][3];
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                inversa[i][j] = adjunta[i][j] / det;
+            }
+        }
+        return inversa;
+    }
+
+    public static void main(String[] args) {
+        Inversa frame = new Inversa();
+        frame.setVisible(true);
+    }
+}		

@@ -57,7 +57,7 @@ public class MyCalculatorMatriz extends JFrame{
 		JButton btnThree = this.createNewButton("Determinante de una matriz", 6, 130, 268, 50);
 		btnThree.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				Determinante addScreen = new Determinante(100, 100, 643, 346);
+				Determinante addScreen = new Determinante();
 				addScreen.setVisible(true);
 			}
 		});
@@ -66,7 +66,7 @@ public class MyCalculatorMatriz extends JFrame{
 		JButton btnFour = this.createNewButton("Inversa de una matriz", 6, 185, 268, 50);
 		btnFour.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				Inversa addScreen = new Inversa(100, 100, 643, 346);
+				Inversa addScreen = new Inversa();
 				addScreen.setVisible(true);
 			}
 		});
