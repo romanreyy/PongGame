@@ -31,8 +31,12 @@ public class fondo extends JPanel implements ActionListener, KeyListener {
 
     private final CustomButton pauseButton = new CustomButton("Pausar");
 
+    private int gameTime = 0;
+    private final int HALF_TIME_DURATION = 60000; // 1 minuto por mitad (en milisegundos)
+    private boolean isSecondHalf = false; // Para controlar si es la segunda mitad
+
     public fondo() {
-    	setPreferredSize(new Dimension(GAME_WIDTH + SIDEBAR_WIDTH, GAME_HEIGHT + INFO_HEIGHT));
+        setPreferredSize(new Dimension(GAME_WIDTH + SIDEBAR_WIDTH, GAME_HEIGHT + INFO_HEIGHT));
         setBackground(Color.BLACK);
         setFocusable(true);
         requestFocusInWindow(); // Pedir el foco inicialmente
@@ -58,6 +62,58 @@ public class fondo extends JPanel implements ActionListener, KeyListener {
         sidebar.add(Box.createVerticalGlue());
 
         this.add(sidebar);
+
+        // Iniciar el temporizador del juego
+        Timer gameTimer = new Timer(1000, e -> updateGameTime());
+        gameTimer.start();
+    }
+
+    private void updateGameTime() {
+        if (isPaused) return;
+
+        gameTime += 1000;
+        if (gameTime >= HALF_TIME_DURATION) {
+            if (!isSecondHalf) {
+                // Termina el primer tiempo, cambiar de lado
+                isSecondHalf = true;
+                switchSides();
+                resetGame();
+            } else {
+                // Termina el segundo tiempo, finalizar el juego
+                timer.stop();
+                JOptionPane.showMessageDialog(this, "Fin del partido\nArgentina: " + score1 + " - Brasil: " + score2);
+            }
+        }
+        repaint();
+    }
+
+    private void switchSides() {
+        // Cambiar lados de las paletas
+        int tempY = paddle1Y;
+        paddle1Y = paddle2Y;
+        paddle2Y = tempY;
+
+        // Invertir la bandera visualmente, pero mantener la puntuación lógica
+        Color[] tempColors = argentinaColors.clone();
+        System.arraycopy(brazilColors, 0, argentinaColors, 0, brazilColors.length);
+        System.arraycopy(tempColors, 0, brazilColors, 0, argentinaColors.length);
+
+        // Intercambiar nombres visualmente, pero no las puntuaciones
+        String tempName = "Argentina";
+        if (isSecondHalf) {
+            tempName = "Brasil";
+        }
+        goalScorerTeam = tempName;
+    }
+    
+    private void resetGame() {
+        ballX = GAME_WIDTH / 2 - 5;
+        ballY = GAME_HEIGHT / 2 - 5;
+        ballXSpeed = 2; // Velocidad baja al reiniciar
+        ballYSpeed = 2; // Velocidad baja al reiniciar
+        firstImpact = true; // Restablecer la bandera del primer impacto
+        waitingAfterGoal = true;
+        gameTime = 0; // Reiniciar el tiempo para la segunda mitad
     }
 
     private void togglePause() {
@@ -66,11 +122,6 @@ public class fondo extends JPanel implements ActionListener, KeyListener {
         if (!isPaused) {
             this.requestFocusInWindow(); // Asegura que el panel vuelva a tener el foco cuando se reanuda
         }
-    }
-
-    private void goHome() {
-        // Implementar la lógica para volver a la pantalla de inicio
-        System.out.println("Volviendo a la pantalla de inicio");
     }
 
     @Override
@@ -99,10 +150,25 @@ public class fondo extends JPanel implements ActionListener, KeyListener {
 
         drawImprovedScoreboard(g);
 
+        // Dibujar el tiempo restante
+        drawTimeRemaining(g);
+
         if (showingGoalMessage) {
             drawGoalMessage(g);
         }
     }
+
+    private void drawTimeRemaining(Graphics g) {
+        int remainingTime = HALF_TIME_DURATION / 1000 - gameTime / 1000;
+        String timeText = String.format("Tiempo: %02d:%02d", remainingTime / 60, remainingTime % 60);
+
+        g.setColor(Color.WHITE);
+        g.setFont(new Font("Arial", Font.BOLD, 18));
+        
+        // Dibujar el tiempo en la parte superior del campo de juego
+        g.drawString(timeText, GAME_WIDTH / 2 - 50, 20);
+    }
+
 
     private void drawPaddle(Graphics g, int x, int y, Color[] colors) {
         int stripeHeight = PADDLE_HEIGHT / colors.length;
@@ -135,18 +201,23 @@ public class fondo extends JPanel implements ActionListener, KeyListener {
         g2d.drawString(String.valueOf(score1), GAME_WIDTH / 2 - 60, GAME_HEIGHT + 65);
         g2d.drawString(String.valueOf(score2), GAME_WIDTH / 2 + 40, GAME_HEIGHT + 65);
 
-        // Nombres de los equipos
+        // Nombres de los equipos, invertidos según la mitad del juego
         Font teamFont = new Font("Arial", Font.BOLD, 16);
         g2d.setFont(teamFont);
         g2d.setColor(new Color(200, 200, 200));
 
         // Ajustar la posición del texto de los equipos
-        g2d.drawString("Argentina", 20, GAME_HEIGHT + 30);
-        g2d.drawString("Brasil", GAME_WIDTH - 80, GAME_HEIGHT + 30);
-
-        // Banderas de los equipos centradas debajo de los nombres
-        drawSimpleFlag(g2d, 30, GAME_HEIGHT + 40, argentinaColors);
-        drawSimpleFlag(g2d, GAME_WIDTH - 50, GAME_HEIGHT + 40, brazilColors);
+        if (isSecondHalf) {
+            g2d.drawString("Brasil", 20, GAME_HEIGHT + 30);
+            g2d.drawString("Argentina", GAME_WIDTH - 80, GAME_HEIGHT + 30);
+            drawSimpleFlag(g2d, 30, GAME_HEIGHT + 40, brazilColors);
+            drawSimpleFlag(g2d, GAME_WIDTH - 50, GAME_HEIGHT + 40, argentinaColors);
+        } else {
+            g2d.drawString("Argentina", 20, GAME_HEIGHT + 30);
+            g2d.drawString("Brasil", GAME_WIDTH - 80, GAME_HEIGHT + 30);
+            drawSimpleFlag(g2d, 30, GAME_HEIGHT + 40, argentinaColors);
+            drawSimpleFlag(g2d, GAME_WIDTH - 50, GAME_HEIGHT + 40, brazilColors);
+        }
     }
 
     private void drawSimpleFlag(Graphics2D g2d, int x, int y, Color[] colors) {
@@ -203,13 +274,14 @@ public class fondo extends JPanel implements ActionListener, KeyListener {
 
         if (waitingAfterGoal) {
             waitCounter++;
-            if(waitCounter >= WAIT_TIME) {
+            if (waitCounter >= WAIT_TIME) {
                 waitingAfterGoal = false;
                 waitCounter = 0;
             }
             repaint();
             return;
         }
+        
         ballX += ballXSpeed;
         ballY += ballYSpeed;
 
@@ -234,14 +306,25 @@ public class fondo extends JPanel implements ActionListener, KeyListener {
         }
 
         if (ballX <= 0) {
-            score2++;
+            if (isSecondHalf) {
+                score2++; // El equipo de la derecha (Brasil) anota
+                showGoalMessage("Brasil");
+            } else {
+                score1++; // El equipo de la izquierda (Argentina) anota
+                showGoalMessage("Argentina");
+            }
             resetBall();
-            showGoalMessage("Brasil");
         }
+        
         if (ballX >= GAME_WIDTH) {
-            score1++;
+            if (isSecondHalf) {
+                score1++; // El equipo de la izquierda (Argentina) anota
+                showGoalMessage("Argentina");
+            } else {
+                score2++; // El equipo de la derecha (Brasil) anota
+                showGoalMessage("Brasil");
+            }
             resetBall();
-            showGoalMessage("Argentina");
         }
 
         if (showingGoalMessage) {
@@ -260,6 +343,7 @@ public class fondo extends JPanel implements ActionListener, KeyListener {
         goalMessageCounter = 0;
         goalScorerTeam = team;
     }
+
 
     private void resetBall() {
         ballX = GAME_WIDTH / 2 - 5;
@@ -303,10 +387,10 @@ public class fondo extends JPanel implements ActionListener, KeyListener {
         frame.add(game);
         frame.pack();
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        
+
         // Centrar la ventana en la pantalla
         frame.setLocationRelativeTo(null);
-        
+
         frame.setVisible(true);
     }
 
