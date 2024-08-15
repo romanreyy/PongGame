@@ -198,15 +198,22 @@ public class fondo extends JPanel implements ActionListener, KeyListener {
         Font scoreFont = new Font("Arial", Font.BOLD, 36);
         g2d.setFont(scoreFont);
         g2d.setColor(Color.WHITE);
-        g2d.drawString(String.valueOf(score1), GAME_WIDTH / 2 - 60, GAME_HEIGHT + 65);
-        g2d.drawString(String.valueOf(score2), GAME_WIDTH / 2 + 40, GAME_HEIGHT + 65);
+
+        // Ajuste de las posiciones de puntuación
+        if (isSecondHalf) {
+            g2d.drawString(String.valueOf(score2), GAME_WIDTH / 2 - 60, GAME_HEIGHT + 65); // Brasil
+            g2d.drawString(String.valueOf(score1), GAME_WIDTH / 2 + 40, GAME_HEIGHT + 65); // Argentina
+        } else {
+            g2d.drawString(String.valueOf(score1), GAME_WIDTH / 2 - 60, GAME_HEIGHT + 65); // Argentina
+            g2d.drawString(String.valueOf(score2), GAME_WIDTH / 2 + 40, GAME_HEIGHT + 65); // Brasil
+        }
 
         // Nombres de los equipos, invertidos según la mitad del juego
         Font teamFont = new Font("Arial", Font.BOLD, 16);
         g2d.setFont(teamFont);
         g2d.setColor(new Color(200, 200, 200));
 
-        // Ajustar la posición del texto de los equipos
+        // Ajustar la posición del texto de los equipos y las banderas
         if (isSecondHalf) {
             g2d.drawString("Brasil", 20, GAME_HEIGHT + 30);
             g2d.drawString("Argentina", GAME_WIDTH - 80, GAME_HEIGHT + 30);
@@ -220,6 +227,7 @@ public class fondo extends JPanel implements ActionListener, KeyListener {
         }
     }
 
+
     private void drawSimpleFlag(Graphics2D g2d, int x, int y, Color[] colors) {
         int flagWidth = 30;
         int flagHeight = 20;
@@ -232,6 +240,7 @@ public class fondo extends JPanel implements ActionListener, KeyListener {
         g2d.drawRect(x, y, flagWidth, flagHeight);
     }
 
+    
     private void drawGoalMessage(Graphics g) {
         Graphics2D g2d = (Graphics2D) g;
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
@@ -305,8 +314,8 @@ public class fondo extends JPanel implements ActionListener, KeyListener {
             }
         }
 
-        if (ballX <= 0) {
-            if (isSecondHalf) {
+        if (ballX <= 0) { // Si la pelota sale por el lado izquierdo (gol de Brasil)
+            if (!isSecondHalf) {
                 score2++; // El equipo de la derecha (Brasil) anota
                 showGoalMessage("Brasil");
             } else {
@@ -315,9 +324,9 @@ public class fondo extends JPanel implements ActionListener, KeyListener {
             }
             resetBall();
         }
-        
-        if (ballX >= GAME_WIDTH) {
-            if (isSecondHalf) {
+
+        if (ballX >= GAME_WIDTH) { // Si la pelota sale por el lado derecho (gol de Argentina)
+            if (!isSecondHalf) {
                 score1++; // El equipo de la izquierda (Argentina) anota
                 showGoalMessage("Argentina");
             } else {
