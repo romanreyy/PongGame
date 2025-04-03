@@ -1,1 +1,1 @@
-# org.computadoras
+Juego Pong
